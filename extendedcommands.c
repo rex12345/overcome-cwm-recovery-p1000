@@ -952,6 +952,8 @@ void show_advanced_menu()
                             "Wipe Voltage Settings",
                             "Wipe Dalvik Cache",
                             "Wipe Battery Stats",
+			    "Enable Shortened Button Backlights",
+			    "Disable Shortened Button Backlights",
                             "Report Error",
                             "Key Test",
                             "Restart adbd",
@@ -1017,9 +1019,23 @@ void show_advanced_menu()
                 break;
             }
             case 5:
+            {
+                ensure_path_mounted("/sdcard");
+                __system("touch /sdcard/voodoo/enable-slf");
+                ui_print("Shortened button backlights enabled\n");
+                break;
+            }
+            case 6:
+            {
+                ensure_path_mounted("/sdcard");
+                __system("rm /sdcard/voodoo/enable-slf");
+                ui_print("Shortened button backlights disabled\n");
+                break;
+            }
+            case 7:
                 handle_failure(1);
                 break;
-            case 6:
+            case 8:
             {
                 ui_print("Outputting key codes.\n");
                 ui_print("Go back to end debugging.\n");
@@ -1034,20 +1050,20 @@ void show_advanced_menu()
                 while (action != GO_BACK);
                 break;
             }
-            case 7:
+            case 9:
             {
                 ui_print("Restarting adbd daemon\n");
                 __system("killall adbd");
                 break;
             }
-            case 8:
+            case 10:
             {
                 ui_print("Enabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
                 __system("/sbin/busybox rm /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 9:
+            case 11:
             {
                 ui_print("Disabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
@@ -1055,7 +1071,7 @@ void show_advanced_menu()
                 __system("/sbin/busybox touch /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 10:
+            case 12:
             {
                 static char* ext_sizes[] = { "128M",
                                              "256M",
@@ -1098,7 +1114,7 @@ void show_advanced_menu()
                     ui_print("An error occured while partitioning your SD Card. Please see /tmp/recovery.log for more details.\n");
                 break;
             }
-            case 11:
+            case 13:
             {
                 ensure_path_mounted("/system");
                 ensure_path_mounted("/data");
@@ -1107,7 +1123,7 @@ void show_advanced_menu()
                 ui_print("Done!\n");
                 break;
             }
-            case 12:
+            case 14:
             {
                 static char* ext_sizes[] = { "128M",
                                              "256M",
