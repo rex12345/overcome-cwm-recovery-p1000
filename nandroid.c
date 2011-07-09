@@ -267,7 +267,7 @@ int nandroid_backup(const char* backup_path)
 
     if (0 != stat("/sdcard/.android_secure", &s))
     {
-        ui_print("No /sdcard/.android_secure found. Skipping backup of applications on external storage.\n");
+        ui_print("No /sdcard/.android_secure found. Skipping backup of applications on internal sd-card.\n");
     }
     else
     {
@@ -277,7 +277,7 @@ int nandroid_backup(const char* backup_path)
 
     if (0 != stat("/sdcard/Android", &s))
     {
-        ui_print("No /sdcard/Android found. Skipping backup of application files on external storage.\n");
+        ui_print("No /sdcard/Android found. Skipping backup of application files on internal sd-card.\n");
     }
     else
     {
@@ -287,7 +287,7 @@ int nandroid_backup(const char* backup_path)
 
     if (0 != stat("/emmc/.android_secure", &s))
     {
-        ui_print("No /emmc/.android_secure found. Skipping backup of applications on external storage.\n");
+        ui_print("No /emmc/.android_secure found. Skipping backup of applications on external sd-card.\n");
     }
     else
     {
@@ -297,7 +297,7 @@ int nandroid_backup(const char* backup_path)
 
     if (0 != stat("/emmc/Android", &s))
     {
-        ui_print("No /emmc/Android found. Skipping backup of application files on external storage.\n");
+        ui_print("No /emmc/Android found. Skipping backup of application files on external sd-card.\n");
     }
     else
     {
