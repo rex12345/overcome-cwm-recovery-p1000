@@ -28,6 +28,7 @@
 #include <linux/kd.h>
 
 #include <pixelflinger/pixelflinger.h>
+#include <cutils/memory.h>
 
 #ifndef BOARD_LDPI_RECOVERY
 	#include "font_10x18.h"

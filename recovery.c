@@ -673,9 +673,11 @@ wipe_data(int confirm) {
     erase_volume("/data");
     erase_volume("/cache");
     erase_volume("/dbdata");
-    erase_volume("/sd-ext");
     erase_volume("/sdcard/.android_secure");
+    erase_volume("/sdcard/android");
     erase_volume("/emmc/.android_secure");
+    erase_volume("/emmc/android");
+    //erase_volume("/sd-ext");
     ui_print("Data wipe complete.\n");
 }
 
@@ -821,9 +823,9 @@ main(int argc, char **argv) {
         case 'u': update_package = optarg; break;
         case 'w': 
 #ifndef BOARD_RECOVERY_ALWAYS_WIPES
-	wipe_data = wipe_cache = 1;
+        wipe_data = wipe_cache = 1;
 #endif
-	break;
+        break;
         case 'c': wipe_cache = 1; break;
         case 'e': encrypted_fs_mode = optarg; toggle_secure_fs = 1; break;
         case 't': ui_show_text(1); break;

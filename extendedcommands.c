@@ -384,7 +384,7 @@ void show_mount_internal_sd()
     }
 
     if ((write(fd, vol->device, strlen(vol->device)) < 0) &&
-	(!vol->device2 || (write(fd, vol->device, strlen(vol->device2)) < 0))) {
+        (!vol->device2 || (write(fd, vol->device, strlen(vol->device2)) < 0))) {
         LOGE("Unable to write to ums lunfile (%s)", strerror(errno));
         close(fd);
         return -1;
@@ -613,9 +613,9 @@ void show_partition_menu()
 				mount_menue[mountable_volumes].v = &device_volumes[i];
 				++mountable_volumes;
 				if (is_safe_to_format(v->mount_point)) {
-				  sprintf(&format_menue[formatable_volumes].txt, "format %s", v->mount_point);
-				  format_menue[formatable_volumes].v = &device_volumes[i];
-				  ++formatable_volumes;
+				    sprintf(&format_menue[formatable_volumes].txt, "format %s", v->mount_point);
+				    format_menue[formatable_volumes].v = &device_volumes[i];
+				    ++formatable_volumes;
 				}
 		    }
 		    else if (strcmp("ramdisk", v->fs_type) != 0 && strcmp("mtd", v->fs_type) == 0 && is_safe_to_format(v->mount_point))
@@ -943,8 +943,8 @@ void show_advanced_menu()
                             "Wipe Voltage Settings",
                             "Wipe Dalvik Cache",
                             "Wipe Battery Stats",
-			    "Enable Shortened Button Backlights",
-			    "Disable Shortened Button Backlights",
+                            "Enable Shortened Button Backlights",
+                            "Disable Shortened Button Backlights",
                             "Report Error",
                             "Key Test",
                             "Restart adbd",
@@ -1168,12 +1168,12 @@ void show_voodoo_menu() {
                               NULL
   };
 
-  static char* list[] = { "disable lagfix",
-                          "enable  lagfix               (default)",
+  static char* list[] = { "Disable lagfix",
+                          "Enable  lagfix               (default)",
                           "/system lagfix on            (default)",
                           "/system lagfix off",
-                          "debug on",
-                          "debug off                    (default)",
+                          "Debug on",
+                          "Debug off                    (default)",
                           NULL
     };
 
@@ -1181,18 +1181,18 @@ void show_voodoo_menu() {
     {
         FILE* f = fopen("/voodoo/run/lagfix_enabled","r");
         if (f==NULL) {
-          ui_print("\nVoodoo lagfix is actually: disabled\n");
+          ui_print("\nVoodoo lagfix is actually: Disabled\n");
         } else {
-          ui_print("\nVoodoo lagfix is actually: enabled\n");
+          ui_print("\nVoodoo lagfix is actually: Enabled\n");
           fclose(f);
         }
 
 	__system("/voodoo/bin/is_lagfix_config_enabled");
         f = fopen("/voodoo/run/lagfix_config_enabled","r");
         if (f==NULL) {
-          ui_print("                next boot: disabled\n");
+          ui_print("                Next Boot: Disabled\n");
         } else {
-          ui_print("                next boot: enabled\n");
+          ui_print("                Next Boot: Enabled\n");
           fclose(f);
         }
 
@@ -1201,19 +1201,19 @@ void show_voodoo_menu() {
 	__system("/voodoo/bin/is_lagfix_system_conversion_enabled");
         f = fopen("/voodoo/run/lagfix_system_conversion_enabled","r");
         if (f==NULL) {
-          ui_print("\n/system lagfix conversion: no\n");
+          ui_print("\n/System Lagfix Conversion: No\n");
         } else {
-          ui_print("\n/system lagfix conversion: yes\n");
+          ui_print("\n/System Lagfix Conversion: Yes\n");
           fclose(f);
         }
 
 	__system("/voodoo/bin/is_lagfix_debug_mode_enabled");
         f = fopen("/voodoo/run/lagfix_debug_enabled","r");
         if (f==NULL) {
-          ui_print("               debug mode: no\n");
+          ui_print("               Debug Mode: No\n");
         } else {
           fclose(f);
-          ui_print("               debug mode: yes\n");
+          ui_print("               Debug Mode: Yes\n");
         }
           ui_print("\n\n\n\n\n\n\n\n");
 
@@ -1304,7 +1304,7 @@ void process_volumes() {
     if (is_data_media()) {
         setup_data_media();
     }
-    
+
     return;
 
     // dead code.

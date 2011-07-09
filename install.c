@@ -127,7 +127,7 @@ try_update_binary(const char *path, ZipArchive *zip) {
     }
     bool ok = mzExtractZipEntryToFile(zip, binary_entry, fd);
     close(fd);
-    
+
     if (!ok) {
         LOGE("Can't copy %s\n", ASSUMED_UPDATE_BINARY_NAME);
         mzCloseZipArchive(zip);
