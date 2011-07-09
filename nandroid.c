@@ -262,7 +262,7 @@ int nandroid_backup(const char* backup_path)
     if (0 != (ret = nandroid_backup_partition(backup_path, "/data")))
         return ret;
 
-    if (0 != (ret = nandroid_backup_partition(backup_path, "/datadata")))
+    if (0 != (ret = nandroid_backup_partition(backup_path, "/dbdata")))
         return ret;
 
     if (0 != stat("/sdcard/.android_secure", &s))
