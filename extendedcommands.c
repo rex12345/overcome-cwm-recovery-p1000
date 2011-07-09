@@ -945,7 +945,7 @@ void show_advanced_menu()
                             "Wipe Battery Stats",
                             "Enable Shortened Button Backlights",
                             "Disable Shortened Button Backlights",
-                            "Report Error",
+                            "Show Log",
                             "Key Test",
                             "Restart adbd",
                             "Enable Yes/No Confirmation",
@@ -1024,7 +1024,7 @@ void show_advanced_menu()
                 break;
             }
             case 7:
-                handle_failure(1);
+                ui_printlogtail(12);
                 break;
             case 8:
             {
