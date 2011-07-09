@@ -135,9 +135,9 @@ Value* FormatFn(const char* name, State* state, int argc, Expr* argv[]) {
         return StringValue(strdup(""));
     }
     
-    if (strcmp(path, "/data") == 0 && has_datadata()) {
-        ui_print("Formatting /datadata...\n", path);
-        if (0 != format_volume("/datadata")) {
+    if (strcmp(path, "/data") == 0) {
+        ui_print("Formatting /dbdata...\n", path);
+        if (0 != format_volume("/dbdata")) {
             free(path);
             return StringValue(strdup(""));
         }
@@ -146,6 +146,14 @@ Value* FormatFn(const char* name, State* state, int argc, Expr* argv[]) {
             return StringValue(strdup(""));
         }
         if (0 != format_volume("/sdcard/Android")) {
+            free(path);
+            return StringValue(strdup(""));
+        }
+        if (0 != format_volume("/emmc/.android_secure")) {
+            free(path);
+            return StringValue(strdup(""));
+        }
+        if (0 != format_volume("/emmc/Android")) {
             free(path);
             return StringValue(strdup(""));
         }

@@ -677,7 +677,7 @@ wipe_data(int confirm) {
     erase_volume("/sdcard/android");
     erase_volume("/emmc/.android_secure");
     erase_volume("/emmc/android");
-    //erase_volume("/sd-ext");
+    erase_volume("/sd-ext");
     ui_print("Data wipe complete.\n");
 }
 
