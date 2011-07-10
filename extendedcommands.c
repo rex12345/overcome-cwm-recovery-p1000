@@ -946,17 +946,9 @@ void show_advanced_menu()
                             "Enable Shortened Button Backlights",
                             "Disable Shortened Button Backlights",
                             "Show Log",
-                            "Key Test",
-                            "Restart adbd",
                             "Enable Yes/No Confirmation",
                             "Disable Yes/No Confirmation",
-#ifndef BOARD_HAS_SMALL_RECOVERY
-                            "Partition SD Card",
                             "Fix Permissions",
-#ifdef BOARD_HAS_SDCARD_INTERNAL
-                            "Partition Internal SD Card",
-#endif
-#endif
                             NULL
     };
 
@@ -1028,33 +1020,12 @@ void show_advanced_menu()
                 break;
             case 8:
             {
-                ui_print("Outputting key codes.\n");
-                ui_print("Go back to end debugging.\n");
-                int key;
-                int action;
-                do
-                {
-                    key = ui_wait_key();
-                    action = device_handle_key(key, 1);
-                    ui_print("Key: %d\n", key);
-                }
-                while (action != GO_BACK);
-                break;
-            }
-            case 9:
-            {
-                ui_print("Restarting adbd daemon\n");
-                __system("killall adbd");
-                break;
-            }
-            case 10:
-            {
                 ui_print("Enabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
                 __system("/sbin/busybox rm /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 11:
+            case 9:
             {
                 ui_print("Disabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
@@ -1062,99 +1033,13 @@ void show_advanced_menu()
                 __system("/sbin/busybox touch /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 12:
-            {
-                static char* ext_sizes[] = { "128M",
-                                             "256M",
-                                             "512M",
-                                             "1024M",
-                                             "2048M",
-                                             "4096M",
-                                             NULL };
-
-                static char* swap_sizes[] = { "0M",
-                                              "32M",
-                                              "64M",
-                                              "128M",
-                                              "256M",
-                                              NULL };
-
-                static char* ext_headers[] = { "Ext Size", "", NULL };
-                static char* swap_headers[] = { "Swap Size", "", NULL };
-
-                int ext_size = get_menu_selection(ext_headers, ext_sizes, 0, 0);
-                if (ext_size == GO_BACK)
-                    continue;
-
-                int swap_size = get_menu_selection(swap_headers, swap_sizes, 0, 0);
-                if (swap_size == GO_BACK)
-                    continue;
-
-                char sddevice[256];
-                Volume *vol = volume_for_path("/sdcard");
-                strcpy(sddevice, vol->device);
-                // we only want the mmcblk, not the partition
-                sddevice[strlen("/dev/block/mmcblkX")] = NULL;
-                char cmd[PATH_MAX];
-                setenv("SDPATH", sddevice, 1);
-                sprintf(cmd, "sdparted -es %s -ss %s -efs ext3 -s", ext_sizes[ext_size], swap_sizes[swap_size]);
-                ui_print("Partitioning SD Card... please wait...\n");
-                if (0 == __system(cmd))
-                    ui_print("Done!\n");
-                else
-                    ui_print("An error occured while partitioning your SD Card. Please see /tmp/recovery.log for more details.\n");
-                break;
-            }
-            case 13:
+            case 10:
             {
                 ensure_path_mounted("/system");
                 ensure_path_mounted("/data");
                 ui_print("Fixing permissions...\n");
                 __system("fix_permissions");
                 ui_print("Done!\n");
-                break;
-            }
-            case 14:
-            {
-                static char* ext_sizes[] = { "128M",
-                                             "256M",
-                                             "512M",
-                                             "1024M",
-                                             "2048M",
-                                             "4096M",
-                                             NULL };
-
-                static char* swap_sizes[] = { "0M",
-                                              "32M",
-                                              "64M",
-                                              "128M",
-                                              "256M",
-                                              NULL };
-
-                static char* ext_headers[] = { "Data Size", "", NULL };
-                static char* swap_headers[] = { "Swap Size", "", NULL };
-
-                int ext_size = get_menu_selection(ext_headers, ext_sizes, 0, 0);
-                if (ext_size == GO_BACK)
-                    continue;
-
-                int swap_size = 0;
-                if (swap_size == GO_BACK)
-                    continue;
-
-                char sddevice[256];
-                Volume *vol = volume_for_path("/emmc");
-                strcpy(sddevice, vol->device);
-                // we only want the mmcblk, not the partition
-                sddevice[strlen("/dev/block/mmcblkX")] = NULL;
-                char cmd[PATH_MAX];
-                setenv("SDPATH", sddevice, 1);
-                sprintf(cmd, "sdparted -es %s -ss %s -efs ext3 -s", ext_sizes[ext_size], swap_sizes[swap_size]);
-                ui_print("Partitioning Internal SD Card... please wait...\n");
-                if (0 == __system(cmd))
-                    ui_print("Done!\n");
-                else
-                    ui_print("An error occured while partitioning your Internal SD Card. Please see /tmp/recovery.log for more details.\n");
                 break;
             }
         }
