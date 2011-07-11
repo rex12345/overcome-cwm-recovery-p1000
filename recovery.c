@@ -700,38 +700,10 @@ prompt_and_wait() {
 
         switch (chosen_item) {
             case ITEM_REBOOT:
-                poweroff=0;
-                return;
-
-            case ITEM_WIPE_DATA:
-                wipe_data(ui_text_visible());
-                if (!ui_text_visible()) return;
+                show_reboot_menu();
                 break;
-
-            case ITEM_WIPE_CACHE:
-                if (confirm_selection("Confirm wipe?", "Yes - Wipe Cache"))
-                {
-                    ui_print("\n-- Wiping cache...\n");
-                    erase_volume("/cache");
-                    ui_print("Cache wipe complete.\n");
-                    if (!ui_text_visible()) return;
-                }
-                break;
-
-            case ITEM_APPLY_SDCARD:
-                if (confirm_selection("Confirm install?", "Yes - Install /sdcard/update.zip"))
-                {
-                    ui_print("\n-- Install from sdcard...\n");
-                    int status = install_package(SDCARD_PACKAGE_FILE);
-                    if (status != INSTALL_SUCCESS) {
-                        ui_set_background(BACKGROUND_ICON_ERROR);
-                        ui_print("Installation aborted.\n");
-                    } else if (!ui_text_visible()) {
-                        return;  // reboot if logs aren't visible
-                    } else {
-                        ui_print("\nInstall from sdcard complete.\n");
-                    }
-                }
+            case ITEM_WIPE_MENU:
+                show_wipe_menu();
                 break;
             case ITEM_INSTALL_ZIP:
                 show_install_update_menu();

@@ -76,15 +76,66 @@ int install_zip(const char* packagefilepath)
     return 0;
 }
 
-char* INSTALL_MENU_ITEMS[] = {  "apply /sdcard/update.zip",
-                                "choose zip from internal sdcard",
+static int
+erase_volume(const char *volume) {
+    ui_set_background(BACKGROUND_ICON_INSTALLING);
+    ui_show_indeterminate_progress();
+    ui_print("Formatting %s...\n", volume);
+
+   /* if (strcmp(volume, "/cache") == 0) {
+        // Any part of the log we'd copied to cache is now gone.
+        // Reset the pointer so we copy from the beginning of the temp
+        // log.
+        tmplog_offset = 0;
+    } */
+
+    return format_volume(volume);
+}
+
+char* REBOOT_MENU_ITEMS[] = {   "reboot",
+                                "reboot recovery",
+                                "reboot download",
+                                NULL };
+#define ITEM_REBOOT_NORMAL    0
+#define ITEM_REBOOT_RECOVERY  1
+#define ITEM_REBOOT_DOWNLOAD  2
+
+void show_reboot_menu()
+{
+    static char* headers[] = {  "Reboot Selection Menu",
+                                "",
+                                NULL
+    };
+    for (;;)
+    {
+        int chosen_item = get_menu_selection(headers, REBOOT_MENU_ITEMS, 0, 0);
+        switch (chosen_item)
+        {
+            case ITEM_REBOOT_NORMAL:
+                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "");
+                break;
+            case ITEM_REBOOT_RECOVERY:
+                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
+                break;
+            case ITEM_REBOOT_DOWNLOAD:
+                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
+                break;
+            default:
+                return;
+        }
+
+    }
+}
+
+char* INSTALL_MENU_ITEMS[] = {  "choose zip from internal sdcard",
                                 "choose zip from external sdcard",
+                                "apply /sdcard/update.zip",
                                 "toggle signature verification",
                                 "toggle script asserts",
                                 NULL };
-#define ITEM_APPLY_SDCARD     0
-#define ITEM_CHOOSE_INT       1
-#define ITEM_CHOOSE_EXT       2
+#define ITEM_CHOOSE_INT       0
+#define ITEM_CHOOSE_EXT       1
+#define ITEM_APPLY_SDCARD     2
 #define ITEM_SIG_CHECK        3
 #define ITEM_ASSERTS          4
 
@@ -117,6 +168,90 @@ void show_install_update_menu()
             case ITEM_CHOOSE_EXT:
                 show_choose_ext_zip_menu();
                 break;
+            default:
+                return;
+        }
+
+    }
+}
+
+char* WIPE_MENU_ITEMS[] = {  "wipe data / factory reset",
+                             "wipe cache",
+                             "wipe dalvik cache",
+                             "wipe voltage settings",
+                             "wipe battery stats",
+                             NULL };
+#define ITEM_WIPE_DATA       0
+#define ITEM_WIPE_CACHE      1
+#define ITEM_WIPE_DALVIK     2
+#define ITEM_WIPE_VOLTS      3
+#define ITEM_WIPE_BATT       4
+
+void show_wipe_menu()
+{
+    static char* headers[] = {  "Wipes of all shapes and sizes",
+                                "",
+                                NULL
+    };
+    for (;;)
+    {
+        int chosen_item = get_menu_selection(headers, WIPE_MENU_ITEMS, 0, 0);
+        switch (chosen_item)
+        {
+            case ITEM_WIPE_DATA:
+                if (confirm_selection("Confirm wipe of all user data?", "Yes - delete all user data"))
+                ui_print("\n-- Wiping data...\n");
+                device_wipe_data();
+                erase_volume("/data");
+                erase_volume("/cache");
+                erase_volume("/dbdata");
+                erase_volume("/sdcard/.android_secure");
+                erase_volume("/sdcard/android");
+                erase_volume("/emmc/.android_secure");
+                erase_volume("/emmc/android");
+                //erase_volume("/sd-ext");
+                ui_print("All User Data Wiped.\n");
+                break;
+            case ITEM_WIPE_CACHE:
+                if (confirm_selection("Confirm wipe?", "Yes - Wipe Cache"))
+                {
+                    erase_volume("/cache");
+                    ui_print("Cache Wiped.\n");
+                }
+                break;
+            case ITEM_WIPE_DALVIK:
+            {
+                if (0 != ensure_path_mounted("/data"))
+                    break;
+                //ensure_path_mounted("/sd-ext");
+                ensure_path_mounted("/cache");
+                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Dalvik Cache")) {
+                    __system("rm -r /data/dalvik-cache");
+                    __system("rm -r /cache/dalvik-cache");
+                    __system("rm -r /sd-ext/dalvik-cache");
+                }
+                ensure_path_unmounted("/data");
+                ui_print("Dalvik Cache Wiped.\n");
+                break;
+            }
+            case ITEM_WIPE_VOLTS:
+            {
+                if (0 != ensure_path_mounted("/system"))
+                    break;
+                ensure_path_mounted("/system");
+                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Voltage Settings")) {
+                    __system("rm -r /system/etc/init.d/S_volt_scheduler");
+                }
+                ensure_path_unmounted("/system");
+                ui_print("Voltage Settings Wiped.\n");
+                break;
+            }
+            case ITEM_WIPE_BATT:
+            {
+                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Battery Stats"))
+                    wipe_battery_stats();
+                break;
+            }
             default:
                 return;
         }
@@ -933,22 +1068,17 @@ void wipe_battery_stats()
 
 void show_advanced_menu()
 {
-    static char* headers[] = {  "Advanced and Debugging Menu",
+    static char* headers[] = {  "Tweaks Menu",
                                 "",
                                 NULL
     };
 
-    static char* list[] = { "Reboot Recovery",
-                            "Reboot Download",
-                            "Wipe Voltage Settings",
-                            "Wipe Dalvik Cache",
-                            "Wipe Battery Stats",
-                            "Enable Shortened Button Backlights",
+    static char* list[] = { "Enable Shortened Button Backlights",
                             "Disable Shortened Button Backlights",
-                            "Show Log",
                             "Enable Yes/No Confirmation",
                             "Disable Yes/No Confirmation",
                             "Fix Permissions",
+                            "Show Log",
                             NULL
     };
 
@@ -960,72 +1090,27 @@ void show_advanced_menu()
         switch (chosen_item)
         {
             case 0:
-#ifdef TARGET_RECOVERY_PRE_COMMAND
-                __system( TARGET_RECOVERY_PRE_COMMAND );
-#endif
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
-                break;
-            case 1:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
-                break;
-            case 2:
-            {
-                if (0 != ensure_path_mounted("/system"))	
-                    break;	
-                ensure_path_mounted("/system");	
-                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Voltage Settings")) {	
-                    __system("rm -r /system/etc/init.d/S_volt_scheduler");	
-                }
-                ensure_path_unmounted("/system");	
-                ui_print("Voltage Settings Wiped.\n");	
-                break;	
-            }
-            case 3:
-            {
-                if (0 != ensure_path_mounted("/data"))
-                    break;
-                ensure_path_mounted("/sd-ext");
-                ensure_path_mounted("/cache");
-                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Dalvik Cache")) {
-                    __system("rm -r /data/dalvik-cache");
-                    __system("rm -r /cache/dalvik-cache");
-                    __system("rm -r /sd-ext/dalvik-cache");
-                }
-                ensure_path_unmounted("/data");
-                ui_print("Dalvik Cache wiped.\n");
-                break;
-            }
-            case 4:
-            {
-                if (confirm_selection( "Confirm wipe?", "Yes - Wipe Battery Stats"))
-                    wipe_battery_stats();
-                break;
-            }
-            case 5:
             {
                 ensure_path_mounted("/sdcard");
                 __system("touch /sdcard/voodoo/enable-slf");
                 ui_print("Shortened button backlights enabled\n");
                 break;
             }
-            case 6:
+            case 1:
             {
                 ensure_path_mounted("/sdcard");
                 __system("rm /sdcard/voodoo/enable-slf");
                 ui_print("Shortened button backlights disabled\n");
                 break;
             }
-            case 7:
-                ui_printlogtail(12);
-                break;
-            case 8:
+            case 2:
             {
                 ui_print("Enabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
                 __system("/sbin/busybox rm /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 9:
+            case 3:
             {
                 ui_print("Disabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
@@ -1033,7 +1118,7 @@ void show_advanced_menu()
                 __system("/sbin/busybox touch /sdcard/clockworkmod/.no_confirm");
                 break;
             }
-            case 10:
+            case 4:
             {
                 ensure_path_mounted("/system");
                 ensure_path_mounted("/data");
@@ -1042,6 +1127,9 @@ void show_advanced_menu()
                 ui_print("Done!\n");
                 break;
             }
+            case 5:
+                ui_printlogtail(12);
+                break;
         }
     }
 }
@@ -1053,12 +1141,12 @@ void show_voodoo_menu() {
                               NULL
   };
 
-  static char* list[] = { "Disable lagfix",
-                          "Enable  lagfix               (default)",
+  static char* list[] = { "disable lagfix",
+                          "enable  lagfix               (default)",
                           "/system lagfix on            (default)",
                           "/system lagfix off",
-                          "Debug on",
-                          "Debug off                    (default)",
+                          "debug on",
+                          "debug off                    (default)",
                           NULL
     };
 
