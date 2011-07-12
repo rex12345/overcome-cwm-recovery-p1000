@@ -92,7 +92,7 @@ erase_volume(const char *volume) {
     return format_volume(volume);
 }
 
-char* REBOOT_MENU_ITEMS[] = {   "reboot",
+char* REBOOT_MENU_ITEMS[] = {   "reboot system",
                                 "reboot recovery",
                                 "reboot download",
                                 NULL };
@@ -501,7 +501,7 @@ void show_nandroid_restore_menu()
         return;
 
     if (confirm_selection("Confirm restore?", "Yes - Restore"))
-        nandroid_restore(file, 1, 1, 1, 1, 1, 0);
+        nandroid_restore(file, 1, 1, 1, 1, 0, 0);
 }
 
 #ifndef BOARD_UMS_LUNFILE
@@ -972,16 +972,14 @@ void show_nandroid_advanced_restore_menu()
                             "Restore system",
                             "Restore data",
                             "Restore cache",
-                            "Restore sd-ext",
-                            "Restore wimax",
                             NULL
     };
     
-    char tmp[PATH_MAX];
+/*    char tmp[PATH_MAX];
     if (0 != get_partition_device("wimax", tmp)) {
         // disable wimax restore option
         list[5] = NULL;
-    }
+    } */
 
     static char* confirm_restore  = "Confirm restore?";
 
@@ -1004,14 +1002,14 @@ void show_nandroid_advanced_restore_menu()
             if (confirm_selection(confirm_restore, "Yes - Restore cache"))
                 nandroid_restore(file, 0, 0, 0, 1, 0, 0);
             break;
-        case 4:
+/*        case 4:
             if (confirm_selection(confirm_restore, "Yes - Restore sd-ext"))
                 nandroid_restore(file, 0, 0, 0, 0, 1, 0);
             break;
-        case 5:
+        case 4:
             if (confirm_selection(confirm_restore, "Yes - Restore wimax"))
                 nandroid_restore(file, 0, 0, 0, 0, 0, 1);
-            break;
+            break; */
     }
 }
 
@@ -1239,12 +1237,10 @@ void create_fstab()
          write_fstab_root("/boot", file);
     write_fstab_root("/cache", file);
     write_fstab_root("/data", file);
-    if (has_datadata()) {
-        write_fstab_root("/datadata", file);
-    }
+    write_fstab_root("/dbdata", file);
     write_fstab_root("/system", file);
     write_fstab_root("/sdcard", file);
-    write_fstab_root("/sd-ext", file);
+    //write_fstab_root("/sd-ext", file);
     fclose(file);
     LOGI("Completed outputting fstab.\n");
 }
@@ -1288,8 +1284,7 @@ void process_volumes() {
     int ret = 0;
     ret = bml_check_volume("/system");
     ret |= bml_check_volume("/data");
-    if (has_datadata())
-        ret |= bml_check_volume("/datadata");
+    ret |= bml_check_volume("/dbdata");
     ret |= bml_check_volume("/cache");
     
     if (ret == 0) {
@@ -1313,7 +1308,7 @@ void process_volumes() {
     ui_print("in case of error.\n");
 
     nandroid_backup(backup_path);
-    nandroid_restore(backup_path, 1, 1, 1, 1, 1, 0);
+    nandroid_restore(backup_path, 1, 1, 1, 1, 0, 0); //boot, system, data, cache, sdext, wimax
     ui_set_show_text(0);
 }
 

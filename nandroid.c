@@ -552,8 +552,8 @@ int nandroid_restore(const char* backup_path, int restore_boot, int restore_syst
     if (restore_cache && 0 != (ret = nandroid_restore_partition_extended(backup_path, "/cache", 0)))
         return ret;
 
-    if (restore_sdext && 0 != (ret = nandroid_restore_partition(backup_path, "/sd-ext")))
-        return ret;
+/*    if (restore_sdext && 0 != (ret = nandroid_restore_partition(backup_path, "/sd-ext")))
+        return ret; */
 
     sync();
     ui_set_background(BACKGROUND_ICON_NONE);

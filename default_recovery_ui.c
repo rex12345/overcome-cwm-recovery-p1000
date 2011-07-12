@@ -22,13 +22,13 @@
 
 char* MENU_HEADERS[] = { NULL };
 
-char* MENU_ITEMS[] = { "reboot system",
-                       "install a zip",
-                       "wipe data",
-                       "backup & restore",
-                       "mounts & storage",
-                       "tweaks",
-                       "voodoo",
+char* MENU_ITEMS[] = { "reboot menu",
+                       "install menu",
+                       "wipe menu",
+                       "nandroid menu",
+                       "storage menu",
+                       "tweaks menu",
+                       "voodoo menu",
                        "power off",
                        NULL };
 
