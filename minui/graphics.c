@@ -137,7 +137,7 @@ static void set_active_framebuffer(unsigned n)
     }
 }
 
-void gr_flip_32(unsigned *bits, unsigned short *ptr, unsigned count)
+ void gr_flip_32(unsigned *bits, unsigned short *ptr, unsigned count)
 {
    unsigned i=0;
    while (i<count) {

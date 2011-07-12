@@ -968,10 +968,10 @@ void show_nandroid_advanced_restore_menu()
                                 NULL
     };
 
-    static char* list[] = { "Restore boot",
-                            "Restore system",
-                            "Restore data",
-                            "Restore cache",
+    static char* list[] = { "restore boot",
+                            "restore system",
+                            "restore data",
+                            "restore cache",
                             NULL
     };
     
@@ -1020,9 +1020,9 @@ void show_nandroid_menu()
                                 NULL
     };
 
-    static char* list[] = { "Backup",
-                            "Restore",
-                            "Advanced Restore",
+    static char* list[] = { "backup",
+                            "restore",
+                            "advanced restore",
                             NULL
     };
 
@@ -1071,12 +1071,12 @@ void show_advanced_menu()
                                 NULL
     };
 
-    static char* list[] = { "Enable Shortened Button Backlights",
-                            "Disable Shortened Button Backlights",
-                            "Enable Yes/No Confirmation",
-                            "Disable Yes/No Confirmation",
-                            "Fix Permissions",
-                            "Show Log",
+    static char* list[] = { "enable shortened button backlights",
+                            "disable shortened button backlights",
+                            "enable yes/no confirmation",
+                            "disable yes/no confirmation",
+                            "fix permissions",
+                            "show log",
                             NULL
     };
 
@@ -1103,17 +1103,17 @@ void show_advanced_menu()
             }
             case 2:
             {
-                ui_print("Enabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
                 __system("/sbin/busybox rm /sdcard/clockworkmod/.no_confirm");
+                ui_print("Yes/No confirmation enabled during install/restore\n");
                 break;
             }
             case 3:
             {
-                ui_print("Disabling Yes/No confirmation during install/restore\n");
                 ensure_path_mounted("/sdcard");
                 __system("/sbin/busybox mkdir -p /sdcard/clockworkmod");
                 __system("/sbin/busybox touch /sdcard/clockworkmod/.no_confirm");
+                ui_print("Yes/No confirmation disabled during install/restore\n");
                 break;
             }
             case 4:
