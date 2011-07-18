@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/reboot.h>
+#include <reboot/reboot.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -112,13 +113,13 @@ void show_reboot_menu()
         switch (chosen_item)
         {
             case ITEM_REBOOT_NORMAL:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "");
+                reboot_wrapper("");
                 break;
             case ITEM_REBOOT_RECOVERY:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "recovery");
+                reboot_wrapper("recovery");
                 break;
             case ITEM_REBOOT_DOWNLOAD:
-                __reboot(LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, "download");
+                reboot_wrapper("download");
                 break;
             default:
                 return;
